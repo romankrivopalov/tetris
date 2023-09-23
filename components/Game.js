@@ -17,6 +17,70 @@ class Game {
     this._level = this._setting.level;
     // поле имеет размер 20х10
     this._playfield = this._setting.playfield;
+  };
+
+  // движение фигуры налево
+  movePieceLeft() {
+    this.activePiece.x -= 1;
+
+    // если перемещение фигуры было на несуществующую позицию, возвращаем её обратно
+    if (this.hasCollision()) this.activePiece.x += 1;
+  };
+
+  // движение фигуры направо
+  movePieceRight() {
+    this.activePiece.x += 1;
+
+    if (this.hasCollision()) this.activePiece.x -= 1;
+  };
+
+  // движение фигуры вниз
+  movePieceDown() {
+    this.activePiece.y += 1;
+
+    if (this.hasCollision()) {
+      this.activePiece.y -= 1;
+      // если фигура дошла до низа или столкнулась с другой фигурой, фиксируем её
+      this.lockPiece();
+    }
+  };
+
+  // проверка выходит ли фигура за границы поля
+  hasCollision() {
+    // const { x, y } = this.activePiece;
+    const { y: pieceY, x: pieceX, blocks } = this.activePiece;
+
+    for (let y = 0; y < blocks.length; y++) {
+      for (let x = 0; x < blocks[y].length; x++) {
+        if (
+          // проверка наличия блока в фигуре, например смещать фигуру вниз, если в блоке нижний ряд все нули
+          blocks[y][x] &&
+          // проверка расположения блока в пределах игрового поля
+          ((this._playfield[pieceY + y] === undefined || this._playfield[pieceY + y][pieceX] === undefined) ||
+          // проверка свободного места в игровом поле, столкновение фигур
+          this._playfield[pieceY + y][pieceX + x])
+        ) {
+          return true
+        }
+      }
+    }
+
+    // если обратиться к несуществующему индексу
+    return false
+  }
+
+  // зафиксировать положение фигуры
+  lockPiece() {
+    const { y: pieceY, x: pieceX, blocks } = this.activePiece;
+
+    for (let y = 0; y < blocks.length; y++) {
+      for (let x = 0; x < blocks[y].length; x++) {
+        // если блок не пустая ячейка
+        if (blocks[y][x]) {
+          this._playfield[pieceY + y][pieceX + x] = blocks[y][x];
+        }
+      }
+    }
   }
 }
 
