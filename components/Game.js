@@ -3,11 +3,34 @@ class Game {
   activePiece = {
     x: 0,
     y: 0,
-    blocks: [
-      [0,1,0],
-      [1,1,1],
-      [0,0,0],
-    ],
+    // геттер для обращения к ещё неопределенным значениям
+    // метод возвращает фигуры, соответствующую индексу
+    get blocks() {
+      return this.rotations[this.rotationIndex];
+    },
+    rotationIndex: 0,
+    rotations: [
+      [
+        [0,1,0],
+        [1,1,1],
+        [0,0,0],
+      ],
+      [
+        [0,1,0],
+        [0,1,1],
+        [0,1,0],
+      ],
+      [
+        [0,0,0],
+        [1,1,1],
+        [0,1,0],
+      ],
+      [
+        [0,1,0],
+        [1,1,0],
+        [0,1,0],
+      ],
+    ]
   };
 
   constructor(setting) {
@@ -45,9 +68,19 @@ class Game {
     }
   };
 
+  rotatePiece() {
+    // изменение индекса при повороте фигуры
+    this.activePiece.rotationIndex = (this.activePiece.rotationIndex + 1) % 4;
+
+    if (this.hasCollision()) {
+      this.activePiece.rotationIndex = (4 - (this.activePiece.rotationIndex + 1)) % 4;
+    }
+
+    return this.activePiece;
+  }
+
   // проверка выходит ли фигура за границы поля
   hasCollision() {
-    // const { x, y } = this.activePiece;
     const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
     for (let y = 0; y < blocks.length; y++) {
@@ -56,7 +89,7 @@ class Game {
           // проверка наличия блока в фигуре, например смещать фигуру вниз, если в блоке нижний ряд все нули
           blocks[y][x] &&
           // проверка расположения блока в пределах игрового поля
-          ((this._playfield[pieceY + y] === undefined || this._playfield[pieceY + y][pieceX] === undefined) ||
+          ((this._playfield[pieceY + y] === undefined || this._playfield[pieceY + y][pieceX + x] === undefined) ||
           // проверка свободного места в игровом поле, столкновение фигур
           this._playfield[pieceY + y][pieceX + x])
         ) {
