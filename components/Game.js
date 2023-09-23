@@ -39,11 +39,11 @@ class Game {
     this._lines = this._setting.lines;
     this._level = this._setting.level;
     // поле имеет размер 20х10
-    this._playfield = this._setting.playfield;
+    this.playfield = this.createPlayField(); // * заменить на значение createPlayField
   };
 
   // движение фигуры налево
-  movePieceLeft() {
+  movePieceLeft = () => {
     this.activePiece.x -= 1;
 
     // если перемещение фигуры было на несуществующую позицию, возвращаем её обратно
@@ -51,14 +51,14 @@ class Game {
   };
 
   // движение фигуры направо
-  movePieceRight() {
+  movePieceRight = () => {
     this.activePiece.x += 1;
 
     if (this.hasCollision()) this.activePiece.x -= 1;
   };
 
   // движение фигуры вниз
-  movePieceDown() {
+  movePieceDown = () => {
     this.activePiece.y += 1;
 
     if (this.hasCollision()) {
@@ -68,7 +68,7 @@ class Game {
     }
   };
 
-  rotatePiece() {
+  rotatePiece = () => {
     // изменение индекса при повороте фигуры
     this.activePiece.rotationIndex = (this.activePiece.rotationIndex + 1) % 4;
 
@@ -80,7 +80,7 @@ class Game {
   }
 
   // проверка выходит ли фигура за границы поля
-  hasCollision() {
+  hasCollision = () => {
     const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
     for (let y = 0; y < blocks.length; y++) {
@@ -89,9 +89,9 @@ class Game {
           // проверка наличия блока в фигуре, например смещать фигуру вниз, если в блоке нижний ряд все нули
           blocks[y][x] &&
           // проверка расположения блока в пределах игрового поля
-          ((this._playfield[pieceY + y] === undefined || this._playfield[pieceY + y][pieceX + x] === undefined) ||
+          ((this.playfield[pieceY + y] === undefined || this.playfield[pieceY + y][pieceX + x] === undefined) ||
           // проверка свободного места в игровом поле, столкновение фигур
-          this._playfield[pieceY + y][pieceX + x])
+          this.playfield[pieceY + y][pieceX + x])
         ) {
           return true
         }
@@ -103,16 +103,55 @@ class Game {
   }
 
   // зафиксировать положение фигуры
-  lockPiece() {
+  lockPiece = () => {
     const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
     for (let y = 0; y < blocks.length; y++) {
       for (let x = 0; x < blocks[y].length; x++) {
         // если блок не пустая ячейка
         if (blocks[y][x]) {
-          this._playfield[pieceY + y][pieceX + x] = blocks[y][x];
+          this.playfield[pieceY + y][pieceX + x] = blocks[y][x];
         }
       }
+    }
+  }
+
+  createPlayField = () => {
+    const playfield = [];
+
+    for (let y = 0; y < 20; y++) {
+      playfield[y] = [];
+
+      for (let x = 0; x < 10; x++) {
+        playfield[y][x] = 0;
+      }
+    }
+
+    return playfield;
+  }
+
+  getState = () => {
+    const playfield = this.createPlayField();
+    const { y: pieceY, x: pieceX, blocks } = this.activePiece;
+
+    for (let y = 0; y < this.playfield.length; y++) {
+      playfield[y] = [];
+
+      for (let x; x < pieceY.length; x++) {
+        playfield[y][x] = this.playfield[y][x];
+      }
+    }
+
+    for (let y = 0; y < blocks.length; y++) {
+      for (let x = 0; x < blocks[y].length; x++) {
+        if (blocks[y][x]) {
+          playfield[pieceY + y][pieceX + x] = blocks[y][x];
+        }
+      }
+    }
+
+    return {
+      playfield
     }
   }
 }
