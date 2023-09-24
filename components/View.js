@@ -120,7 +120,7 @@ class View {
 
   // экран паузы игры
   renderPauseScreen = () => {
-    this._context.fillStyle = 'rgba(45, 44, 51, .75)';
+    this._context.fillStyle = 'rgba(45, 44, 51, 0.75)';
     this._context.fillRect(0, 0, this._width, this._height);
 
     this._context.fillStyle = 'white';
