@@ -7,14 +7,7 @@ class Game {
       '3': 300,
       '4': 1200,
     };
-    // объект активной фигуры
-    this.activePiece = this._createPiece();
-    // объект следующей фигуры
-    this.nextPiece = this._createPiece();
-    this._score = this._setting.score;
-    this._lines = this._setting.lines;
-    // поле имеет размер 20х10
-    this.playfield = this.createPlayField(); // * заменить на значение createPlayField
+    this.reset();
   };
 
   get level() {
@@ -38,6 +31,8 @@ class Game {
 
   // движение фигуры вниз
   movePieceDown = () => {
+    if (this._topOut) return
+
     this.activePiece.y += 1;
 
     if (this.hasCollision()) {
@@ -50,6 +45,11 @@ class Game {
       this._updateScore(clearedLines);
 
       this._updatePieces();
+    }
+
+    // если после столкновения, новая фигура сразу столкнулась
+    if (this.hasCollision()) {
+      this._topOut = true;
     }
   };
 
@@ -197,6 +197,19 @@ class Game {
     }
   }
 
+  reset = () => {
+    // объект активной фигуры
+    this.activePiece = this._createPiece();
+    // объект следующей фигуры
+    this.nextPiece = this._createPiece();
+    this._score = this._setting.score;
+    this._lines = this._setting.lines;
+    // термин из терминологии tetris, что игрок дошел до верха игрового поля
+    this._topOut = false;
+    // поле имеет размер 20х10
+    this.playfield = this.createPlayField(); // * заменить на значение createPlayField
+  }
+
   createPlayField = () => {
     const playfield = [];
 
@@ -236,7 +249,8 @@ class Game {
       level: this.level,
       lines: this._lines,
       nextPiece: this.nextPiece,
-      playfield
+      playfield,
+      isGameOver: this._topOut,
     }
   }
 }

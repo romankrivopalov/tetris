@@ -116,6 +116,7 @@ class View {
     this._context.textBaseline = 'middle';
     this._context.fillText('GAME OVER', this._width / 2, this._height / 2 - 48);
     this._context.fillText(`Score: ${score}`, this._width / 2, this._height / 2);
+    this._context.fillText('Press ENTER to restart', this._width / 2, this._height / 2 + 48);
   }
 
   // экран паузы игры

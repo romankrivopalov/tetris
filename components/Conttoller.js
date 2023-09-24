@@ -3,19 +3,28 @@ class Controller {
     this.game = game;
     this.view = view;
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
     this._intervalId = null;
     this._isPlaying = false;
 
     document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
 
     this.view.renderStartScreen();
   }
 
   _updeteView = () => {
-    if (!this._isPlaying) {
+    const state = this.game.getState();
+
+    // если игра закончена
+    if (state.isGameOver) {
+      this.view.renderEndScreen(state);
+    // если включена пауза
+    } else if (!this._isPlaying) {
       this.view.renderPauseScreen();
+    // показать экран игры
     } else {
-      this.view.renderMainScreen(this.game.getState());
+      this.view.renderMainScreen(state);
     }
   }
 
@@ -37,9 +46,23 @@ class Controller {
     }
   }
 
+  _reset = () => {
+    this.game = game;
+    this.view = view;
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
+    this._intervalId = null;
+    this._isPlaying = false;
+  }
+
   _update = () => {
     this.game.movePieceDown();
     this._updeteView();
+  }
+
+  _reset = () => {
+    this.game.reset();
+    this._play();
   }
 
   _pause = () => {
@@ -54,10 +77,23 @@ class Controller {
     this._updeteView();
   }
 
+  handleKeyUp = (e) => {
+    switch (e.key) {
+      case 'ArrowDown': // вниз
+        this._startTimer();
+
+        break;
+    }
+  }
+
   handleKeyDown = (e) => {
+    const state = this.game.getState();
+
     switch (e.key) {
       case 'Enter':
-        if (this._isPlaying) {
+        if (state.isGameOver) {
+          this._reset();
+        } else if (this._isPlaying) {
           this._pause();
         } else {
           this._play();
@@ -71,22 +107,23 @@ class Controller {
         }
 
         break;
-      case 'ArrowUp': // налево
+      case 'ArrowUp': // вверх
         if (this._isPlaying) {
           this.game.rotatePiece();
           this._updeteView();
         }
 
         break;
-      case 'ArrowRight': // налево
+      case 'ArrowRight': // направо
         if (this._isPlaying) {
           this.game.movePieceRight();
           this._updeteView();
         }
 
         break;
-      case 'ArrowDown': // налево
+      case 'ArrowDown': // вниз
         if (this._isPlaying) {
+          this._stopTimer();
           this.game.movePieceDown();
           this._updeteView();
         }
