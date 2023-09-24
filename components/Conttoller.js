@@ -27,11 +27,13 @@ class Controller {
   }
 
   _startTimer = () => {
+    const speed = 1000 - this.game.getState().level * 100;
+
     if (!this._intervalId) {
       // сохранение интервала для его дальнейшей остановки
       this._intervalId = setInterval(() => {
         this._update();
-      }, 1000);
+      }, speed > 0 ? speed : 100);
     }
   }
 
@@ -60,22 +62,35 @@ class Controller {
         } else {
           this._play();
         }
+
         break;
       case 'ArrowLeft': // налево
-        this.game.movePieceLeft();
-        this._updeteView();
+        if (this._isPlaying) {
+          this.game.movePieceLeft();
+          this._updeteView();
+        }
+
         break;
       case 'ArrowUp': // налево
-        this.game.rotatePiece();
-        this._updeteView();
+        if (this._isPlaying) {
+          this.game.rotatePiece();
+          this._updeteView();
+        }
+
         break;
       case 'ArrowRight': // налево
-        this.game.movePieceRight();
-        this._updeteView();
+        if (this._isPlaying) {
+          this.game.movePieceRight();
+          this._updeteView();
+        }
+
         break;
       case 'ArrowDown': // налево
-        this.game.movePieceDown();
-        this._updeteView();
+        if (this._isPlaying) {
+          this.game.movePieceDown();
+          this._updeteView();
+        }
+
         break;
     }
   }
