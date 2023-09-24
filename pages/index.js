@@ -6,8 +6,6 @@ import View from '../components/View.js'
 const game = new Game(all.gameSetting);
 const view = new View(all.viewSetting);
 
-view.render(game.getState());
-
 window.game = game;
 window.view = view;
 

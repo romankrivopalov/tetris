@@ -232,6 +232,10 @@ class Game {
     }
 
     return {
+      score: this._score,
+      level: this.level,
+      lines: this._lines,
+      nextPiece: this.nextPiece,
       playfield
     }
   }

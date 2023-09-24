@@ -167,7 +167,7 @@ export const gameSetting = {
 
 export const viewSetting = {
   elementSelector: '#root',
-  width: 240,
+  width: 360,
   height: 480,
   rows: 20,
   columns: 10,
