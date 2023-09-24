@@ -1,7 +1,6 @@
 export const gameSetting = {
   score: 0,
   lines: 0,
-  level: 0,
   pieceRotationsI: [
     [
       [0, 0, 0, 0],

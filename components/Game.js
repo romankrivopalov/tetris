@@ -1,16 +1,25 @@
 class Game {
   constructor(setting) {
     this._setting = setting;
+    this._points = {
+      '1': 40,
+      '2': 100,
+      '3': 300,
+      '4': 1200,
+    };
     // объект активной фигуры
     this.activePiece = this._createPiece();
     // объект следующей фигуры
     this.nextPiece = this._createPiece();
     this._score = this._setting.score;
     this._lines = this._setting.lines;
-    this._level = this._setting.level;
     // поле имеет размер 20х10
     this.playfield = this.createPlayField(); // * заменить на значение createPlayField
   };
+
+  get level() {
+    return Math.floor(this._lines * 0.1);
+  }
 
   // движение фигуры налево
   movePieceLeft = () => {
@@ -35,6 +44,10 @@ class Game {
       this.activePiece.y -= 1;
       // если фигура дошла до низа или столкнулась с другой фигурой, фиксируем её
       this.lockPiece();
+      // проверка на удаление линии
+      const clearedLines = this._clearLines();
+      // обновить счет
+      this._updateScore(clearedLines);
 
       this._updatePieces();
     }
@@ -72,6 +85,39 @@ class Game {
 
     // если обратиться к несуществующему индексу
     return false
+  }
+
+  _clearLines = () => {
+    const rows = 20;
+    const columns = 10;
+    let lines = [];
+
+    for (let y = rows - 1; y >= 0; y--) {
+      let numberOfBlocks = 0;
+
+      for (let x = 0; x < columns; x++) {
+        if (this.playfield[y][x]) {
+          numberOfBlocks += 1;
+        }
+      }
+
+      if (numberOfBlocks === 0) {
+        break;
+      } else if (numberOfBlocks < columns) {
+        continue;
+      } else if (numberOfBlocks === columns) {
+        lines.unshift(y)
+      }
+    }
+
+    for (let index of lines) {
+      this.playfield.slice(index, 1);
+
+      this.playfield.unshift(new Array(columns).fill(0));
+    }
+
+    // количество удаляемых линий
+    return lines.length
   }
 
   // зафиксировать положение фигуры
@@ -139,6 +185,16 @@ class Game {
     piece.y = 0;
 
     return piece;
+  }
+
+  // изменение счета
+  _updateScore(clearedLines) {
+    if (clearedLines > 0) {
+      // в _score попадает значение полученных очков, в зависимости от
+      // количества удаленных линий и множителя уровня
+      this._score += this._points[clearedLines] * (this.level + 1);
+      this._lines += clearedLines;
+    }
   }
 
   createPlayField = () => {
