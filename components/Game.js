@@ -1,40 +1,10 @@
 class Game {
-  // объект активной фигуры
-  activePiece = {
-    x: 0,
-    y: 0,
-    // геттер для обращения к ещё неопределенным значениям
-    // метод возвращает фигуры, соответствующую индексу
-    get blocks() {
-      return this.rotations[this.rotationIndex];
-    },
-    rotationIndex: 0,
-    rotations: [
-      [
-        [0,1,0],
-        [1,1,1],
-        [0,0,0],
-      ],
-      [
-        [0,1,0],
-        [0,1,1],
-        [0,1,0],
-      ],
-      [
-        [0,0,0],
-        [1,1,1],
-        [0,1,0],
-      ],
-      [
-        [0,1,0],
-        [1,1,0],
-        [0,1,0],
-      ],
-    ]
-  };
-
   constructor(setting) {
     this._setting = setting;
+    // объект активной фигуры
+    this.activePiece = this._createPiece();
+    // объект следующей фигуры
+    this.nextPiece = this._createPiece();
     this._score = this._setting.score;
     this._lines = this._setting.lines;
     this._level = this._setting.level;
@@ -65,6 +35,8 @@ class Game {
       this.activePiece.y -= 1;
       // если фигура дошла до низа или столкнулась с другой фигурой, фиксируем её
       this.lockPiece();
+
+      this._updatePieces();
     }
   };
 
@@ -116,6 +88,59 @@ class Game {
     }
   }
 
+  _updatePieces = () => {
+    this.activePiece = this.nextPiece;
+    this.nextPiece = this._createPiece();
+  }
+
+  // создание фигуры
+  _createPiece = () => {
+    // случайное значение от 0 до 6
+    const index = Math.floor(Math.random() * 7);
+    // строка, символ каждой буквы обозначают фигуру
+    const type = 'IJLOSTZ'[index];
+    const piece = {
+      // геттер для обращения к ещё неопределенным значениям
+      // метод возвращает фигуры, соответствующую индексу
+      get blocks() {
+        return this.rotations[this.rotationIndex];
+      },
+      rotationIndex: 0,
+    };
+
+    switch (type) {
+      case 'I':
+        piece.rotations = this._setting.pieceRotationsI;
+        break;
+      case 'J':
+        piece.rotations = this._setting.pieceRotationsJ;
+        break;
+      case 'L':
+        piece.rotations = this._setting.pieceRotationsL;
+        break;
+      case 'O':
+        piece.rotations = this._setting.pieceRotationsO;
+        break;
+      case 'S':
+        piece.rotations = this._setting.pieceRotationsS;
+        break;
+      case 'T':
+        piece.rotations = this._setting.pieceRotationsT;
+        break;
+      case 'Z':
+        piece.rotations = this._setting.pieceRotationsZ;
+        break;
+      default:
+        throw new Error('unknown shape type');
+    }
+
+    // установка появления фигуры по центру
+    piece.x = Math.floor((10 - piece.rotations[0].length) / 2);
+    piece.y = 0;
+
+    return piece;
+  }
+
   createPlayField = () => {
     const playfield = [];
 
@@ -137,7 +162,7 @@ class Game {
     for (let y = 0; y < this.playfield.length; y++) {
       playfield[y] = [];
 
-      for (let x; x < pieceY.length; x++) {
+      for (let x = 0; x < this.playfield[y].length; x++) {
         playfield[y][x] = this.playfield[y][x];
       }
     }

@@ -12,6 +12,7 @@ class View {
     this._blockHeight = this._height / this._rows;
     // создание canvas
     this._canvas = document.createElement('canvas');
+    this._canvas.style.border = '2px solid #E4E4E4'
     this._canvas.width = this._width;
     this._canvas.height = this._height;
     this._context = this._canvas.getContext('2d');
