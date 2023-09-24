@@ -1,6 +1,12 @@
 export const gameSetting = {
   score: 0,
   lines: 0,
+  points: {
+    '1': 40,
+    '2': 100,
+    '3': 300,
+    '4': 1200,
+  },
   pieceRotationsI: [
     [
       [0, 0, 0, 0],

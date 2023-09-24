@@ -39,6 +39,7 @@ class View {
     this._element.appendChild(this._canvas);
   }
 
+  // бокаовая панель с информацией
   _renderPanel = ({ level, score, lines, nextPiece }) => {
     this._context.textAlign = 'start';
     this._context.textBaseline = 'top';
@@ -143,9 +144,7 @@ class View {
   // экран игры
   renderMainScreen = (state) => {
     this._clearScreen();
-
     this._renderPlayField(state);
-
     this._renderPanel(state)
   }
 }

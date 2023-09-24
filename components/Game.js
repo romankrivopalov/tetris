@@ -1,12 +1,8 @@
 class Game {
   constructor(setting) {
     this._setting = setting;
-    this._points = {
-      '1': 40,
-      '2': 100,
-      '3': 300,
-      '4': 1200,
-    };
+    // очки за стирание линий
+    this._points = this._setting.points;
     this.reset();
   };
 
@@ -38,7 +34,7 @@ class Game {
     if (this.hasCollision()) {
       this.activePiece.y -= 1;
       // если фигура дошла до низа или столкнулась с другой фигурой, фиксируем её
-      this.lockPiece();
+      this._lockPiece();
       // проверка на удаление линии
       const clearedLines = this._clearLines();
       // обновить счет
@@ -87,6 +83,7 @@ class Game {
     return false
   }
 
+  // очистка линии
   _clearLines = () => {
     const rows = 20;
     const columns = 10;
@@ -111,8 +108,10 @@ class Game {
     }
 
     for (let index of lines) {
+      // вырезать заполненную линию
       this.playfield.splice(index, 1);
 
+      // добавить новую линию
       this.playfield.unshift(new Array(columns).fill(0));
     }
 
@@ -121,7 +120,7 @@ class Game {
   }
 
   // зафиксировать положение фигуры
-  lockPiece = () => {
+  _lockPiece = () => {
     const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
     for (let y = 0; y < blocks.length; y++) {
@@ -207,10 +206,10 @@ class Game {
     // термин из терминологии tetris, что игрок дошел до верха игрового поля
     this._topOut = false;
     // поле имеет размер 20х10
-    this.playfield = this.createPlayField(); // * заменить на значение createPlayField
+    this.playfield = this._createPlayField(); // * заменить на значение createPlayField
   }
 
-  createPlayField = () => {
+  _createPlayField = () => {
     const playfield = [];
 
     for (let y = 0; y < 20; y++) {
@@ -225,7 +224,7 @@ class Game {
   }
 
   getState = () => {
-    const playfield = this.createPlayField();
+    const playfield = this._createPlayField();
     const { y: pieceY, x: pieceX, blocks } = this.activePiece;
 
     for (let y = 0; y < this.playfield.length; y++) {
